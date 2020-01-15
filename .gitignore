@@ -1,0 +1,8 @@
+.*
+!.gitignore
+bin/
+obj/
+sdp_project.cbp
+sdp_project.depend
+sdp_project.layout
+
