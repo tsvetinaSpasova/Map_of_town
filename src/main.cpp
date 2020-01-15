@@ -9,9 +9,9 @@ int main(){
 
     Graph g;
     g.load("input.txt");
-    cout<< g.is_connected("tsvetina") << endl;
+    cout<< g.is_connected("Dupnitsa") << endl;
     g.print_Euler_path();
-    cout << g.is_connected("tsvetina") << endl;
+    cout << g.is_connected("Dupnitsa") << endl;
 
 
     return 0;
