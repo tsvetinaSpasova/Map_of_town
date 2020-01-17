@@ -110,7 +110,7 @@ bool cmp(const std::pair<int, std::vector<Node*>>& v1, const std::pair<int, std:
 }
 **/
 
-std::vector<std::pair< int, std::vector<Graph::Node*>>> Graph::tree_shortest_paths (Node* from, Node* to) const{
+std::vector<std::pair< int, std::vector<Graph::Node*>>> Graph::three_shortest_paths (Node* from, Node* to) const{
 
     std::priority_queue<std::pair <int, std::vector<Node*>>,
                         std::vector<std::pair<int, std::vector<Node*>>>,
@@ -141,10 +141,10 @@ std::vector<std::pair< int, std::vector<Graph::Node*>>> Graph::tree_shortest_pat
     return shortest_paths;
 }
 
-void Graph:: tree_shortest_paths (const std::string from, const std::string to){
-    std::vector<std::pair<int, std::vector<Node*>>> shortest_paths = tree_shortest_paths(locations[from], locations[to]);
+void Graph:: three_shortest_paths (const std::string from, const std::string to){
+    std::vector<std::pair<int, std::vector<Node*>>> shortest_paths = three_shortest_paths(locations[from], locations[to]);
     if(shortest_paths.size() < 3){
-        std::cout << "There aren't tree shortest paths." << std::endl;
+        std::cout << "There aren't three shortest paths." << std::endl;
         return;
     }
     for(int i = 0; i < shortest_paths.size(); i++){
@@ -156,10 +156,10 @@ void Graph:: tree_shortest_paths (const std::string from, const std::string to){
     }
 }
 
-std::vector<std::pair<int,std::vector<Graph::Node*>>> Graph::tree_shortest_paths (std::vector<Node*> closed_locations,
+std::vector<std::pair<int,std::vector<Graph::Node*>>> Graph::three_shortest_paths (std::vector<Node*> closed_locations,
                                                                                   Node* from,
                                                                                   Node* to) const{
-    std::unordered_map<Node*, bool> tempporary_closed;
+    std::unordered_map<Node*, bool> temporary_closed;
     std::priority_queue<std::pair <int, std::vector<Node*>>,
                         std::vector<std::pair<int, std::vector<Node*>>>,
                         std::greater<std::pair<int, std::vector<Node*>>>> potential_paths;
@@ -169,9 +169,9 @@ std::vector<std::pair<int,std::vector<Graph::Node*>>> Graph::tree_shortest_paths
 
 
     for(int i = 0; i < closed_locations.size(); i++){
-        tempporary_closed[closed_locations[i]] = 1;
+        temporary_closed[closed_locations[i]] = 1;
     }
-    if(tempporary_closed[from]){
+    if(temporary_closed[from]){
         return shortest_paths;
     }
 
@@ -179,11 +179,6 @@ std::vector<std::pair<int,std::vector<Graph::Node*>>> Graph::tree_shortest_paths
         std::pair<int, std::vector<Node*>> curr_path = potential_paths.top();
         potential_paths.pop();
         Node* curr_vertex = curr_path.second.back();
-
-        if(tempporary_closed[curr_vertex]){
-            continue;
-        }
-
         used[curr_vertex]++;
 
         if(used[curr_vertex] > 3){
@@ -193,6 +188,9 @@ std::vector<std::pair<int,std::vector<Graph::Node*>>> Graph::tree_shortest_paths
             shortest_paths.push_back(curr_path);
         }
         for(std::pair<int, Node*> next_vertex : (curr_vertex -> paths)){
+            if(temporary_closed[next_vertex.second]){
+                continue;
+            }
             int new_cost = curr_path.first + next_vertex.first;
             curr_path.second.push_back(next_vertex.second);
             std::vector<Node*> new_potential_path = curr_path.second;
@@ -203,7 +201,7 @@ std::vector<std::pair<int,std::vector<Graph::Node*>>> Graph::tree_shortest_paths
     return shortest_paths;
 }
 
-void Graph::tree_shortest_paths (std::vector<std::string> closed_locations, const std::string from, const std::string to){
+void Graph::three_shortest_paths (std::vector<std::string> closed_locations, const std::string from, const std::string to){
 
     std::vector<Node*> to_close;
 
@@ -211,9 +209,9 @@ void Graph::tree_shortest_paths (std::vector<std::string> closed_locations, cons
         to_close.push_back(locations[closed_locations[i]]);
     }
 
-    std::vector<std::pair<int, std::vector<Node*>>> shortest_paths = tree_shortest_paths(to_close, locations[from], locations[to]);
+    std::vector<std::pair<int, std::vector<Node*>>> shortest_paths = three_shortest_paths(to_close, locations[from], locations[to]);
     if(shortest_paths.size() < 3){
-        std::cout << "There aren't tree shortest paths." << std::endl;
+        std::cout << "There aren't three shortest paths." << std::endl;
         return;
     }
 

@@ -1,5 +1,5 @@
 Shumen Burgas 2 Varna 4
 Burgas Pernik 3 Varna 1
 Varna Pernik 2 Sofia 3
-Sofia Dupnitsa 2
+Sofia Dupnitsa 2 Pernik 5
 Pernik Dupnitsa 1

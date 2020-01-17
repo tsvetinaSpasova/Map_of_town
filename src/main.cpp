@@ -14,9 +14,9 @@ int main(){
     ///cout << g.is_connected("Dupnitsa") << endl;
     ///g.tree_shortest_paths("Shumen", "Dupnitsa");
     vector<string> closed;
-    closed.push_back("Pernik");
+    closed.push_back("Burgas");
     ///closed.push_back("")
-    g.tree_shortest_paths(closed, "Shumen", "Dupnitsa");
+    g.three_shortest_paths(closed, "Shumen", "Dupnitsa");
 
 
     return 0;
