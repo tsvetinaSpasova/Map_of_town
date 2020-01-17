@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../include/Graph.h"
 #include <cstdlib>
+#include <queue>
 
 Graph::Graph(){
 }
@@ -8,7 +9,6 @@ Graph::Graph(){
 Graph::Graph(std::string name){
     locations[name] = new Node (name);
 }
-
 
 void Graph::split(const std::string &text, std::vector<std::string> &words, char ch){
     std::string curr = "";
@@ -32,9 +32,7 @@ void Graph::load(std::istream& in) {
 
     std::string line;
     while(getline(in, line)){
-
         std::vector<std::string> words;
-
         split(line, words, ' ');
 
         if(locations.find(words[0]) == locations.end()){
@@ -52,7 +50,6 @@ void Graph::load(std::istream& in) {
     }
 
 }
-
 
 void Graph::load (std::string  file_name){
     std::ifstream in(file_name);
@@ -75,13 +72,10 @@ void Graph:: save (std:: string file_name){
 */
 
 bool Graph::has_path (const Node* from, const Node* to, std::unordered_map<Node*, bool>& used) const {
-
     if(from == to){
         return true;
     }
-
     for(std::pair<int, Node*> next : from->paths){
-
         if(used.find(next.second) == used.end()){
             used[next.second] = 1;
 
@@ -90,26 +84,146 @@ bool Graph::has_path (const Node* from, const Node* to, std::unordered_map<Node*
             }
         }
     }
-
     return false;
 }
 
-
 bool Graph::has_path(const std::string from, const std::string to){
-
     std::unordered_map<Node*, bool> used;
     used[locations[from]] = 1;
     return has_path(locations[from], locations[to], used);
-
 }
 
-///TODO
-bool Graph::tree_shortest_paths (const Node* from, const Node* to) const{
+/**
+bool cmp(const std::pair<int, std::vector<Node*>>& v1, const std::pair<int, std::vector<Node*>>& v2){
+    if(v1.first == v2.first){
+        if(v1.second.size() == v2.second.size()){
+            for(int i = 0; i < v1.size(); i ++){
+                if((long)v1[i] < (long)v2[i]){
+                    return 1;
+                }
+            }
+            return 0;
+        }
+        return v1.size() < v2.size();
+    }
+    return v1.first < v2.first;
+}
+**/
 
+std::vector<std::pair< int, std::vector<Graph::Node*>>> Graph::tree_shortest_paths (Node* from, Node* to) const{
 
+    std::priority_queue<std::pair <int, std::vector<Node*>>,
+                        std::vector<std::pair<int, std::vector<Node*>>>,
+                        std::greater<std::pair<int, std::vector<Node*>>>> potential_paths;
+    potential_paths.push({0, std::vector<Node*>({from})});
+    std::unordered_map<Node*, int> used;
+    std::vector<std::pair<int, std::vector<Node*>>> shortest_paths;
+
+    while(!potential_paths.empty() && used[to] < 3){
+        std::pair<int, std::vector<Node*>> curr_path = potential_paths.top();
+        potential_paths.pop();
+        Node* curr_vertex = curr_path.second.back();
+        used[curr_vertex]++;
+        if(used[curr_vertex] > 3){
+            continue;
+        }
+        if(curr_vertex == to){
+            shortest_paths.push_back(curr_path);
+        }
+        for(std::pair<int, Node*> next_vertex : (curr_vertex -> paths)){
+            int new_cost = curr_path.first + next_vertex.first;
+            curr_path.second.push_back(next_vertex.second);
+            std::vector<Node*> new_potential_path = curr_path.second;
+            curr_path.second.pop_back();
+            potential_paths.push({new_cost, new_potential_path});
+        }
+    }
+    return shortest_paths;
 }
 
-bool Graph::tree_shortest_paths (std::list<Node*> closed_locations, const Node* from, const Node* to) const{
+void Graph:: tree_shortest_paths (const std::string from, const std::string to){
+    std::vector<std::pair<int, std::vector<Node*>>> shortest_paths = tree_shortest_paths(locations[from], locations[to]);
+    if(shortest_paths.size() < 3){
+        std::cout << "There aren't tree shortest paths." << std::endl;
+        return;
+    }
+    for(int i = 0; i < shortest_paths.size(); i++){
+        for(int j = 0; j < shortest_paths[i].second.size(); j++){
+            std::cout << shortest_paths[i].second[j]->name << " ";
+        }
+        std::cout << "; length: " << shortest_paths[i].first;
+        std::cout << std::endl;
+    }
+}
+
+std::vector<std::pair<int,std::vector<Graph::Node*>>> Graph::tree_shortest_paths (std::vector<Node*> closed_locations,
+                                                                                  Node* from,
+                                                                                  Node* to) const{
+    std::unordered_map<Node*, bool> tempporary_closed;
+    std::priority_queue<std::pair <int, std::vector<Node*>>,
+                        std::vector<std::pair<int, std::vector<Node*>>>,
+                        std::greater<std::pair<int, std::vector<Node*>>>> potential_paths;
+    potential_paths.push({0, std::vector<Node*>({from})});
+    std::unordered_map<Node*, int> used;
+    std::vector<std::pair<int, std::vector<Node*>>> shortest_paths;
+
+
+    for(int i = 0; i < closed_locations.size(); i++){
+        tempporary_closed[closed_locations[i]] = 1;
+    }
+    if(tempporary_closed[from]){
+        return shortest_paths;
+    }
+
+    while(!potential_paths.empty() && used[to] < 3){
+        std::pair<int, std::vector<Node*>> curr_path = potential_paths.top();
+        potential_paths.pop();
+        Node* curr_vertex = curr_path.second.back();
+
+        if(tempporary_closed[curr_vertex]){
+            continue;
+        }
+
+        used[curr_vertex]++;
+
+        if(used[curr_vertex] > 3){
+            continue;
+        }
+        if(curr_vertex == to){
+            shortest_paths.push_back(curr_path);
+        }
+        for(std::pair<int, Node*> next_vertex : (curr_vertex -> paths)){
+            int new_cost = curr_path.first + next_vertex.first;
+            curr_path.second.push_back(next_vertex.second);
+            std::vector<Node*> new_potential_path = curr_path.second;
+            curr_path.second.pop_back();
+            potential_paths.push({new_cost, new_potential_path});
+        }
+    }
+    return shortest_paths;
+}
+
+void Graph::tree_shortest_paths (std::vector<std::string> closed_locations, const std::string from, const std::string to){
+
+    std::vector<Node*> to_close;
+
+    for(int i = 0; i < closed_locations.size(); i++){
+        to_close.push_back(locations[closed_locations[i]]);
+    }
+
+    std::vector<std::pair<int, std::vector<Node*>>> shortest_paths = tree_shortest_paths(to_close, locations[from], locations[to]);
+    if(shortest_paths.size() < 3){
+        std::cout << "There aren't tree shortest paths." << std::endl;
+        return;
+    }
+
+    for(int i = 0; i < shortest_paths.size(); i++){
+        for(int j = 0; j < shortest_paths[i].second.size(); j++){
+            std::cout << shortest_paths[i].second[j]->name << " ";
+        }
+        std::cout << "; length: " << shortest_paths[i].first;
+        std::cout << std::endl;
+    }
 
 }
 
@@ -141,7 +255,6 @@ bool Graph::detect_cycle(std::string from){
     return detect_cycle(locations[from], used);
 
 }
-
 
 bool Graph::has_Euler_cycle() const{
 
@@ -273,7 +386,6 @@ bool Graph::is_connected (std::string from){
     return is_connected(locations[from], used);
 }
 
-
 std::vector<std::string> Graph::find_dead_ends() const{
 
     std::vector<std::string> dead_ends;
@@ -285,5 +397,4 @@ std::vector<std::string> Graph::find_dead_ends() const{
     }
     return dead_ends;
 }
-
 
