@@ -1,0 +1,5 @@
+Sofia Dupnitsa 1 Shumen 2 
+Dupnitsa Dobrich 3
+Dobrich Sofia 4
+Shumen Varna 5
+Varna Sofia 6
