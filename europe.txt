@@ -1,0 +1,11 @@
+Sofia Belgrade 2 Paris 3 London 4
+Rome Vienna 3
+Vienna Sofia 4 Moscow 7
+Moscow Warsaw 5 Paris 8
+Warsaw Prague 3 
+Prague Sofia 4
+Belgrade London 6
+Madrid Rome 3
+Budapest Sofia 2
+Paris Vienna 5 Moscow 6 Budapest 2
+London Madrid 4 Paris 1

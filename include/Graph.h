@@ -49,16 +49,15 @@ class Graph{
 
     public:
         Graph();
-        Graph(std:: string);
         void load (std:: string  file_name);
         void save (std:: string file_name);
         bool has_path (const std::string from, const std::string to); /// dfs 1
-        std::vector<std::vector<std::string>> three_shortest_paths (const std::string from, const std::string to); /// yen or epstein 2
-        std::vector<std::vector<std::string>> three_shortest_paths_closed (std::vector<std::string> closed_locations, const std::string from, const std::string to); /// yen or epstein 3
-        bool detect_cycle(std::string from); ///  4///todo
-        void print_Euler_path(); /// 5 ///todo
-        bool is_connected (std::string from); ///has_path_to_each_other 6 ///todo
-        std::vector<std::pair<std::string, std::string>> find_dead_ends() const; /// 7 ///todo
+        std::vector<std::vector<std::string>> three_shortest_paths (const std::string from, const std::string to); /// epstein 2
+        std::vector<std::vector<std::string>> three_shortest_paths_closed (std::vector<std::string> closed_locations, const std::string from, const std::string to); /// epstein 3
+        bool detect_cycle(std::string from); ///  4
+        void print_Euler_path(); /// 5
+        bool is_connected (std::string from); ///has_path_to_each_other 6
+        std::vector<std::pair<std::string, std::string>> find_dead_ends() const; /// 7
 
         ///Bonus
         bool exist_location(const std::string& check_location); /// existing location

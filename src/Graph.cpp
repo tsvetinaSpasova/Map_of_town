@@ -7,10 +7,6 @@
 Graph::Graph(){
 }
 
-Graph::Graph(std::string name){
-    locations[name] = new Node (name);
-}
-
 void split(const std::string &text, std::vector<std::string> &words, char ch){
     std::string curr = "";
     for(int i = 0; i < text.size(); i ++){
@@ -169,7 +165,6 @@ bool Graph::detect_cycle(std::string from){
 
 }
 
-///todo
 bool Graph::has_Euler_cycle() const{
     for(auto curr : locations){
         if((curr.second->in_edges) != (curr.second->paths).size()){
